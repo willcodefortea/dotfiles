@@ -3,23 +3,13 @@
 local lsp = require('lsp-zero')
 lsp.preset('recommended')
 
-local servers = {
-  pyright = {},
-  tsserver = {},
-  sumneko_lua = {
-    Lua = {
-      workspace = { checkThirdParty = false },
-       -- telemetry = { enable = false },
-      diagnostics = {
-          globals = { 'vim' }
-      }
-    },
-  },
-}
+lsp.ensure_installed({
+  "pyright",
+  "tsserver",
+})
 
-lsp.ensure_installed(vim.tbl_keys(servers))
-
-lsp.configure('sumneko_lua', {
+-- Fix Undefined global 'vim'
+lsp.configure('lua-language-server', {
     settings = {
         Lua = {
             diagnostics = {
@@ -65,9 +55,13 @@ lsp.on_attach(function(client, bufnr)
   vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
   vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
   vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
+ 
+  -- Create a command `:Format` local to the LSP buffer
+  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+    vim.lsp.buf.format()
+  end, { desc = 'Format current buffer with LSP' })
 end)
 
-lsp.nvim_workspace()
 lsp.setup()
 
 vim.diagnostic.config({
