@@ -1,5 +1,4 @@
 -- This file can be loaded by calling `lua require('plugins')` from your init.vim
-local vim = vim
 local execute = vim.api.nvim_command
 local fn = vim.fn
 
@@ -20,15 +19,24 @@ return require('packer').startup(function(use)
   use {
 	  'nvim-telescope/telescope.nvim', tag = '0.1.1',
 	  -- or                            , branch = '0.1.x',
-	  requires = { {'nvim-lua/plenary.nvim'} }
+	  requires = { {'nvim-lua/plenary.nvim'} },
+      config = function ()
+          require("telescope").setup{
+            defaults = {
+                file_ignore_patterns = {
+                    "node_modules"
+                }
+            }
+          }
+      end
   }
 
   use({
 	  'rose-pine/neovim',
 	  as = 'rose-pine',
 	  config = function()
-		  require("rose-pine").setup()
-		  vim.cmd('colorscheme rose-pine')
+	      require("rose-pine").setup()
+	      vim.cmd('colorscheme rose-pine')
 	  end
   })
 
@@ -74,4 +82,6 @@ return require('packer').startup(function(use)
       },
       tag = 'nightly' -- optional, updated every week. (see issue #1193)
   }
+
+  use('jose-elias-alvarez/null-ls.nvim')
 end)
